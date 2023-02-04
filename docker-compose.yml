@@ -1,0 +1,14 @@
+version: '3'
+services:
+  telebot:
+    environment:
+      TZ: Asia/Almaty
+    build: 
+      context: .
+      dockerfile: telebot.Dockerfile
+  storage:
+    environment:
+      TZ: Asia/Almaty
+    build: 
+      context: .
+      dockerfile: storage.Dockerfile
