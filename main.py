@@ -302,6 +302,7 @@ class Application:
             await self.write(
                 username=update.message.from_user.username,
                 question=text_message,
+                answer='',
                 typeof='new',
             )
             return
@@ -378,6 +379,7 @@ class Application:
             await self.write(
                 username=update.message.from_user.username,
                 question=text_message,
+                answer='',
                 typeof='add',
             )
             return
