@@ -2,7 +2,7 @@
 TELEGRAM_BOT_TOKEN = "5925005582:AAGmVJKdFfgjajayG2XJUMk2y3iRLPCOVME"
 # shopify
 # TELEGRAM_BOT_TOKEN = "5290714195:AAGXSBX-5KDTbGjC5XJzO08oR7vON1jtuuM"
-CHAT_GPT_API_KEY = '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'
+CHAT_GPT_API_KEY = ''
 
 import content
 import asyncio
@@ -277,7 +277,7 @@ class Application:
         
         # Send a new message 'process is running'
         message = await bot.send_message(chat_id=chat_id, text=self.get_text(content.PROCESS_RUNNING, context))
-        logger.info(f"user={update.message.from_user.username} new={update.message.text}")
+        logger.info(f"user {update.message.from_user.username} new {update.message.text}")
 
         # adding . to the end of the text if there is no any ./!/?
         text_message = self.remove_command(update.message.text.strip(), '/new')
@@ -288,7 +288,7 @@ class Application:
         logger.info(f"post={text_message}")
 
         response = await self.get_translator(context.user_data["language"], "en").wrapper(text_message)
-        logger.info(f"translator={response}")
+        logger.info(f"translator {response}")
 
         response = await self.ask_gpt(response)
         logger.info(f"response from GPT {response}")

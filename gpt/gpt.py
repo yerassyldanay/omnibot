@@ -21,10 +21,11 @@ class OpenAIChatGPT:
                                     json=payload, headers=headers) as resp:
                 response = await resp.json()
 
+        pprint(response)
+
         choices = response.get('choices', [])
         if len(choices) == 0:
-            pprint(response)
+            # pprint(response)
             return 'ERROR'
 
         return choices[0].get('text', '')
-
