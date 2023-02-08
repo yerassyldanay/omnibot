@@ -1,5 +1,8 @@
-TELEGRAM_BOT_TOKEN = "5925005582:AAGmVJKdFfgjajayG2XJUMk2y3iRLPCOVME"
-CHAT_GPT_API_KEY = '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'
+# omni
+# TELEGRAM_BOT_TOKEN = "5925005582:AAGmVJKdFfgjajayG2XJUMk2y3iRLPCOVME"
+# shopify
+TELEGRAM_BOT_TOKEN = "5290714195:AAGXSBX-5KDTbGjC5XJzO08oR7vON1jtuuM"
+CHAT_GPT_API_KEY = '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'
 
 import content
 import asyncio
@@ -155,6 +158,7 @@ class Application:
         # Update the previous message
         await bot.edit_message_text(chat_id=chat_id, message_id=message.message_id, text="Process finished.")
 
+
     @staticmethod
     def get_content_button(context: ContextTypes.DEFAULT_TYPE):
         if context.user_data.get("language", content.KAZ) == content.KAZ:
@@ -262,7 +266,7 @@ class Application:
         return STATE.NEWPOST
 
     async def new_post(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        if self.hit_limit(context=context, incr=1):
+        if not self.user_in_vip_list(update=update) and self.hit_limit(context=context, incr=1):
             await update.message.reply_text(
                 text=self.get_text(content.HIT_LIMIT, context)
             )
@@ -273,7 +277,7 @@ class Application:
         
         # Send a new message 'process is running'
         message = await bot.send_message(chat_id=chat_id, text=self.get_text(content.PROCESS_RUNNING, context))
-        logger.info(f"user {update.message.from_user.username} added a new post {update.message.text}")
+        logger.info(f"user={update.message.from_user.username} new={update.message.text}")
 
         # adding . to the end of the text if there is no any ./!/?
         text_message = self.remove_command(update.message.text.strip(), '/new')
@@ -281,23 +285,32 @@ class Application:
 
         # storing data in a storage
         context.user_data['posts'] = text_message
-        logger.info(f"user input was {text_message}")
+        logger.info(f"post={text_message}")
 
         response = await self.get_translator(context.user_data["language"], "en").wrapper(text_message)
-        logger.info(f"google translator response {response}")
+        logger.info(f"translator={response}")
 
         response = await self.ask_gpt(response)
         logger.info(f"response from GPT {response}")
+
+        if response == 'ERROR':
+            await bot.edit_message_text(
+                chat_id=chat_id, 
+                message_id=message.message_id, 
+                text=self.get_text(textDict=content.EXCEPTION, context=context),
+            )
+            await self.write(
+                username=update.message.from_user.username,
+                question=text_message,
+                typeof='new',
+            )
+            return
         
         response = await self.get_translator("en", context.user_data["language"]).wrapper(response)
         logger.info(f"response from google translator (to original language) {response}")
 
         logger.info(f'user language was {context.user_data["language"]}')
 
-        # await update.message.reply_text(
-            # text=response,
-            # reply_markup=self.get_content_button(context=context)
-        # )
         await bot.edit_message_text(
             chat_id=chat_id, 
             message_id=message.message_id, 
@@ -328,7 +341,7 @@ class Application:
         return STATE.ADD_CONTEXT
 
     async def add_context(self, update: Update, context: ContextTypes.DEFAULT_TYPE):        
-        if self.hit_limit(context=context, incr=1):
+        if not self.user_in_vip_list(update=update) and self.hit_limit(context=context, incr=1):
             await update.message.reply_text(
                 text=self.get_text(content.HIT_LIMIT, context)
             )
@@ -356,6 +369,19 @@ class Application:
         response = await self.ask_gpt(response)
         logger.info(f"response from GPT {response}")
 
+        if response == 'ERROR':
+            await bot.edit_message_text(
+                chat_id=chat_id, 
+                message_id=message.message_id, 
+                text=self.get_text(textDict=content.EXCEPTION, context=context),
+            )
+            await self.write(
+                username=update.message.from_user.username,
+                question=text_message,
+                typeof='add',
+            )
+            return
+
         response = await self.get_translator("en", context.user_data["language"]).wrapper(response)
         logger.info(f"response from google translator (to original language) {response}")
 
@@ -373,7 +399,6 @@ class Application:
             typeof='add',
         )
 
-        logger.info(f"response from GPT {response}")
         logger.info(f'user language was {context.user_data["language"]}')
 
         return STATE.NEWPOST
@@ -436,6 +461,13 @@ feedback: {update.message.text}
         keyDate = datetime.datetime.now().strftime("%d.%m.%Y")
         return context.user_data.get('limit', dict()).get(keyDate, 0)
 
+    @staticmethod
+    def user_in_vip_list(update: Update):
+        return update.message.chat.username in {
+            'yerassyl_danay': '',
+            'assilkhan_amankhan': ''
+        }
+
     async def get_example(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
         index = context.user_data.get('example', 0)
         context.user_data['example'] = self.example.increment(index=index)
@@ -443,6 +475,7 @@ feedback: {update.message.text}
         
         await update.message.reply_text(
             text=result,
+            parse_mode=ParseMode.HTML,
         )
 
     async def write(self, username: str, question: str, answer: str, typeof: str):
@@ -470,7 +503,7 @@ feedback: {update.message.text}
         # writer.save()
 
         await self.storage.send(f'''username: {username}
-'type': {typeof},
+type: {typeof},
 question: {question}''')
 
     def run(self):

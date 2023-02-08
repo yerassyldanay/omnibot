@@ -1,8 +1,10 @@
 import asyncio
-from translate import Translator as tr
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import aiohttp
+import json
+
+from pprint import pprint
 
 class EmailCollection:
     def __init__(self) -> None:
@@ -37,6 +39,9 @@ class TranslatorBot:
 
             async with session.get('https://api.mymemory.translated.net/get', params=params) as resp:
                 result = await resp.json()
+                if resp is None:
+                    pprint(resp)
+                    return 'some error has happend'
                 return result.get('responseData', dict()).get('translatedText', '')
 
     def split_text(self, text: str, max_chunk_size: int = 499):
@@ -46,6 +51,7 @@ class TranslatorBot:
         current_count = 0
         for sentence in sentences:
             if '\n' in sentence:
+                sentence = sentence.replace('\n', '<b>')
                 sentences_split_by_newline = sentence.split('\n')
                 for new_sentence in sentences_split_by_newline:
                     if current_count + len(new_sentence) <= max_chunk_size:
@@ -67,17 +73,36 @@ class TranslatorBot:
         return chunks
 
     async def wrapper(self, text: str) -> str:
-        chunks = self.split_text(text)
+        chunks = [chunk for chunk in self.split_text(text) if len(chunk) > 0]
         tasks = [asyncio.create_task(self.translate(chunk)) for chunk in chunks]
         result = await asyncio.gather(*tasks)
-        return ''.join(result)
+        result = ''.join(result)
+        result = result.replace('<b>', '\n').replace('</b>', '')
+
+        return result
 
 # async def run():
 #     translator = TranslatorBot('en','kk')
-#     english_text = "The meaning of life is a complex and highly debated topic that has been explored by philosophers, religious figures, and scientists throughout history. Some believe that the meaning of life is to seek happiness, others believe it is to fulfill a specific purpose or destiny, and still others believe that life has no inherent meaning and that it is up to each individual to create their own purpose. Ultimately, the meaning of life may be different for each person and can change throughout one's lifetime. Some might find meaning in helping others, others in achieving personal goals, some in finding inner peace, and others in pursuing spiritual enlightenment. The meaning of life is something that is constantly being explored and redefined by each individual as they navigate their own journey through life."
+#     # english_text = "<b>The meaning of life is a complex and highly debated topic that has been explored by philosophers, religious figures, and scientists throughout history. </b>  <b> Some believe that the meaning of life is to seek happiness, others believe it is to fulfill a specific purpose or destiny, and still others believe that life has no inherent meaning and that it is up to each individual to create their own purpose. </b> <b>Ultimately, the meaning of life may be different for each person and can change throughout one's lifetime. </b> <b> Some might find meaning in helping others, others in achieving personal goals, some in finding inner peace, and others in pursuing spiritual enlightenment. </b> <b> The meaning of life is something that is constantly being explored and redefined by each individual as they navigate their own journey through life. </b>"
+#     # english_text = "The meaning of life is a complex and highly debated topic that has been explored by philosophers, religious figures, and scientists throughout history. <b> Some believe that the meaning of life is to seek happiness, others believe it is to fulfill a specific purpose or destiny, and still others believe that life has no inherent meaning and that it is up to each individual to create their own purpose. <b> Ultimately, the meaning of life may be different for each person and can change throughout one's lifetime. <b> Some might find meaning in helping others, others in achieving personal goals, some in finding inner peace, and others in pursuing spiritual enlightenment. <b> The meaning of life is something that is constantly being explored and redefined by each individual as they navigate their own journey through life. <b>"
+#     # english_text = '''The meaning of life is a complex and highly debated topic that has been explored by philosophers, religious figures, and scientists throughout history.\n Some believe that the meaning of life is to seek happiness, others believe it is to fulfill a specific purpose or destiny, and still others believe that life has no inherent meaning and that it is up to each individual to create their own purpose.\n Ultimately, the meaning of life may be different for each person and can change throughout one's lifetime. \n Some might find meaning in helping others, others in achieving personal goals, some in finding inner peace, and others in pursuing spiritual enlightenment. \n The meaning of life is something that is constantly being explored and redefined by each individual as they navigate their own journey through life. \n'''
+#     english_text = '''As a language model, I don't have personal opinions or preferences, but here is a list of some of the most highly rated and popular movies, according to various sources:
+
+#     The Shawshank Redemption (1994)
+#     The Godfather (1972)
+#     The Godfather: Part II (1974)
+#     The Dark Knight (2008)
+#     12 Angry Men (1957)
+#     Schindler's List (1993)
+#     The Lord of the Rings: The Return of the King (2003)
+#     Pulp Fiction (1994)
+#     The Good, the Bad and the Ugly (1966)
+#     Forrest Gump (1994)
+#     '''
 #     tasks = [asyncio.create_task(translator.wrapper(english_text))]
 #     result = await asyncio.gather(*tasks)
-#     # print(result)
+#     for each in result:
+#         print(each)
 #     print(len(result))
 
 # loop = asyncio.new_event_loop()
