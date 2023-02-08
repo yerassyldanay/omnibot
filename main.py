@@ -1,7 +1,7 @@
 # omni
-TELEGRAM_BOT_TOKEN = "5925005582:AAGmVJKdFfgjajayG2XJUMk2y3iRLPCOVME"
+# TELEGRAM_BOT_TOKEN = "5925005582:AAGmVJKdFfgjajayG2XJUMk2y3iRLPCOVME"
 # shopify
-# TELEGRAM_BOT_TOKEN = "5290714195:AAGXSBX-5KDTbGjC5XJzO08oR7vON1jtuuM"
+TELEGRAM_BOT_TOKEN = "5290714195:AAGXSBX-5KDTbGjC5XJzO08oR7vON1jtuuM"
 CHAT_GPT_API_KEY = ''
 
 import content
@@ -283,12 +283,12 @@ class Application:
         text_message = self.remove_command(update.message.text.strip(), '/new')
         text_message = self.add_puntuation(text_message)
 
-        # storing data in a storage
-        context.user_data['posts'] = text_message
-        logger.info(f"post={text_message}")
-
         response = await self.get_translator(context.user_data["language"], "en").wrapper(text_message)
         logger.info(f"translator {response}")
+
+        # storing data in a storage
+        context.user_data['posts'] = response
+        logger.info(f"stored in the context {response}")
 
         response = await self.ask_gpt(response)
         logger.info(f"response from GPT {response}")
@@ -366,6 +366,8 @@ class Application:
 
         response = context.user_data.get("posts", "") + " " + response
         context.user_data['posts'] = response
+
+        logger.info(f"to GPT > {response}")
 
         response = await self.ask_gpt(response)
         logger.info(f"response from GPT {response}")
