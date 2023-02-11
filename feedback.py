@@ -28,7 +28,11 @@ class FeedbackStorage:
 
     async def send(self, text: str):
         for chat_id in self.chat_ids:
-            await self.bot.send_message(chat_id=chat_id, text=text)
+            await self.bot.send_message(
+                chat_id=chat_id, 
+                text=text,
+                parse_mode="HTML"
+            )
 
     def run(self):
         self.application.run_polling()

@@ -1,7 +1,7 @@
 # omni
-# TELEGRAM_BOT_TOKEN = "5925005582:AAGmVJKdFfgjajayG2XJUMk2y3iRLPCOVME"
+TELEGRAM_BOT_TOKEN = "5925005582:AAGmVJKdFfgjajayG2XJUMk2y3iRLPCOVME"
 # shopify
-TELEGRAM_BOT_TOKEN = "5290714195:AAGXSBX-5KDTbGjC5XJzO08oR7vON1jtuuM"
+# TELEGRAM_BOT_TOKEN = "5290714195:AAGXSBX-5KDTbGjC5XJzO08oR7vON1jtuuM"
 CHAT_GPT_API_KEY = ''
 
 import content
@@ -10,7 +10,7 @@ import datetime
 import logging
 from pprint import pprint
 
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot, MessageEntity
 from telegram.ext import (
     ApplicationBuilder, 
     ContextTypes, 
@@ -204,6 +204,7 @@ class Application:
 
         await query.edit_message_text(
             text=self.get_text(content.HELLO, context),
+            parse_mode=ParseMode.HTML,
         )
         # await self.bot.send_message(chat_id=query.message.chat.id, text=self.get_text(content.HELLO, context))
         return STATE.NEWPOST
@@ -316,7 +317,8 @@ class Application:
             chat_id=chat_id, 
             message_id=message.message_id, 
             text=response,
-            reply_markup=self.get_content_button(context=context)
+            reply_markup=self.get_content_button(context=context),
+            parse_mode=ParseMode.HTML
         )
 
         await self.write(
@@ -393,7 +395,8 @@ class Application:
             chat_id=chat_id, 
             message_id=message.message_id, 
             text=response,
-            reply_markup=self.get_content_button(context=context)
+            reply_markup=self.get_content_button(context=context),
+            parse_mode=ParseMode.HTML
         )
 
         await self.write(
