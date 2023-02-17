@@ -98,6 +98,7 @@ class Application:
                 askAddContextCommand,
                 askNewPostCommand,
                 exampleCommand,
+                messageNewPost
             ],
             states={
                 STATE.CHOOSE_LANGUAGE: [
@@ -440,7 +441,7 @@ feedback: {update.message.text}
 
     @staticmethod
     def get_translator(from_lang, to_lang: str):
-        return TranslatorBot(from_lang=from_lang, to_lang=to_lang)
+        return TranslatorBot(from_lang=from_lang, to_lang=to_lang, use_proxy=True)
 
     @staticmethod
     def hit_limit(context: ContextTypes.DEFAULT_TYPE, incr: int = 0) -> bool:
