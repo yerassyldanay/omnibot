@@ -89,6 +89,7 @@ class Application:
 
         callbackChooseLanguage = CallbackQueryHandler(self.change_language, pattern='choose_language_*')
         callbackContentButton = CallbackQueryHandler(self.new_or_additional, pattern='button_content_*')
+        # callbackEvaluatePost = CallbackQueryHandler(self.new_or_additional, pattern='button_content_*')
 
         conversation = ConversationHandler(
             entry_points=[
@@ -261,6 +262,10 @@ class Application:
             )
             return
 
+        text_message = update.message.text.strip()
+        if text_message != "/new":
+            return await self.new_post(update=update, context=context)
+
         await update.message.reply_text(
             text=self.get_text(content.SEND_NEW_POST, context)
         )
@@ -338,6 +343,10 @@ class Application:
             )
             return
 
+        text_message = update.message.text.strip()
+        if text_message != "/add":
+            return await self.add_context(update=update, context=context)
+
         await update.message.reply_text(
             text=self.get_text(content.ADD_CONTEXT, context)
         )
@@ -358,7 +367,7 @@ class Application:
         message = await bot.send_message(chat_id=chat_id, text=self.get_text(content.PROCESS_RUNNING, context))
 
         # adding . to the end of the text if there is no any ./!/?
-        text_message = update.message.text.strip()
+        text_message = self.remove_command(update.message.text.strip(), '/new')
         text_message = self.add_puntuation(text_message)
         
         user_input = text_message
