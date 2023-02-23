@@ -5,7 +5,7 @@ TELEGRAM_BOT_TOKEN = "5290714195:AAGXSBX-5KDTbGjC5XJzO08oR7vON1jtuuM"
 # free version
 # CHAT_GPT_API_KEY = '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'
 # paid version
-CHAT_GPT_API_KEY = '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'
+CHAT_GPT_API_KEY = ''
 
 import re
 import content
