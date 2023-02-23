@@ -34,6 +34,23 @@ class FeedbackStorage:
                 parse_mode="HTML"
             )
 
+    async def sendKeyValues(self, dictionary: dict, additional: dict = {}):
+        result = []
+        for key, value in dictionary.items():
+            result.append(f'''{key}: {value}
+''')
+        for key, value in additional.items():
+            result.append(f'''{key}: {value}
+''')
+        
+        result = ''.join(result)
+        for chat_id in self.chat_ids:
+            await self.bot.send_message(
+                chat_id=chat_id, 
+                text=result,
+                parse_mode="HTML"
+            )
+
     def run(self):
         self.application.run_polling()
 
