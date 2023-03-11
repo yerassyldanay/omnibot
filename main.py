@@ -1,7 +1,7 @@
 # omni
-# TELEGRAM_BOT_TOKEN = "5925005582:AAGmVJKdFfgjajayG2XJUMk2y3iRLPCOVME"
+TELEGRAM_BOT_TOKEN = "5925005582:AAGmVJKdFfgjajayG2XJUMk2y3iRLPCOVME"
 # shopify
-TELEGRAM_BOT_TOKEN = "5290714195:AAGXSBX-5KDTbGjC5XJzO08oR7vON1jtuuM"
+# TELEGRAM_BOT_TOKEN = "5290714195:AAGXSBX-5KDTbGjC5XJzO08oR7vON1jtuuM"
 # free version
 # CHAT_GPT_API_KEY = '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'
 # paid version
@@ -499,6 +499,8 @@ class Application:
         response = await self.get_translator("en", context.user_data["language"]).wrapper(response)
         self.log(user_info, {"TYPE": "get_translator_2", "response": response, "lang": context.user_data["language"]})
 
+        response = re.sub("[\n]{1,}", "\n", re.sub(r"</b>+|<b>+","\n",response))
+
         await bot.edit_message_text(
             chat_id=chat_id, 
             message_id=message.message_id, 
@@ -581,6 +583,8 @@ class Application:
 
         response = await self.get_translator("en", context.user_data["language"]).wrapper(response)
         self.log(user_info, {"TYPE": "get_translator_2", "response": response, "lang": context.user_data["language"]})
+
+        response = re.sub("[\n]{1,}", "\n", re.sub(r"</b>+|<b>+","\n",response))
 
         await bot.edit_message_text(
             chat_id=chat_id, 

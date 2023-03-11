@@ -1,9 +1,9 @@
 PROXY_LIST = [
-    ('yerassyldanay', 'nS9jSPh8NJ', 'http://5.133.163.86:50100'),
-    ('yerassyldanay', 'nS9jSPh8NJ', 'http://185.127.164.25:50100'),
-    ('yerassyldanay', 'nS9jSPh8NJ', 'http://185.127.165.203:50100'),
-    ('yerassyldanay', 'nS9jSPh8NJ', 'http://5.133.163.88:50100'),
-    ('yerassyldanay', 'nS9jSPh8NJ', 'http://185.127.164.142:50100'),
+    ('yerassyldanay', 'nS9jSPh8NJ', 'http://5.133.163.210:50100'),
+    ('yerassyldanay', 'nS9jSPh8NJ', 'http://5.133.163.160:50100'),
+    ('yerassyldanay', 'nS9jSPh8NJ', 'http://5.133.163.27:50100'),
+    ('yerassyldanay', 'nS9jSPh8NJ', 'http://185.127.164.239:50100'),
+    ('yerassyldanay', 'nS9jSPh8NJ', 'http://185.127.165.220:50100'),
 ]
 
 import aiohttp

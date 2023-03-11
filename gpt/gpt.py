@@ -2,6 +2,15 @@ import json
 import aiohttp
 from pprint import pprint
 
+import logging
+
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
+
 class OpenAIChatGPT:
     def __init__(self, api_key: str):
         self.api_key = api_key
@@ -21,7 +30,7 @@ class OpenAIChatGPT:
                                     json=payload, headers=headers) as resp:
                 response = await resp.json()
 
-        pprint(response)
+        logger.info(response)
 
         choices = response.get('choices', [])
         if len(choices) == 0:
