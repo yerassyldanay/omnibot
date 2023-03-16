@@ -3,7 +3,7 @@
 # shopify
 TELEGRAM_BOT_TOKEN = "5846396253:AAH-zzCV3XuoqAJDFeWg7Po_lh41jT30PMc"
 # free version
-CHAT_GPT_API_KEY = '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'
+CHAT_GPT_API_KEY = ''
 # paid version
 # CHAT_GPT_API_KEY = ''
 
